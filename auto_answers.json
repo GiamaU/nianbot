@@ -1,0 +1,36 @@
+[
+  {
+    "type": 0,
+    "question": [
+      {
+        "text": [
+          "hello nian",
+          "hi nian",
+          "hey nian"
+        ],
+        "answer": [
+          "hey {author}",
+          "hi {author}"
+        ],
+        "owanswer": [
+          "hello darling {emoji}",
+          "hey {author}, my love"
+        ]
+      }
+    ]
+  },
+  {
+    "type": 1,
+    "question": [
+      {
+        "text": "",
+        "alises": [
+
+        ],
+        "aswers": [
+
+        ]
+      }
+    ]
+  }
+]
