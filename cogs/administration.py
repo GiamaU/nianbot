@@ -11,7 +11,6 @@ from utils import permissions, utils, dataIO
 
 # todo improve lastid
 # todo new class only for converters (in utils)?
-# todo case insensitive converter
 # add guild_only ?
 
 class MemberID(commands.Converter):
@@ -51,19 +50,6 @@ class MessageID(commands.Converter):
                 raise commands.BadArgument(f"{argument} is not a valid message or Message ID.") from None
         else:
             return m
-
-
-class RoleID(commands.Converter):
-    async def convert(self, ctx, argument):
-        try:
-            r = await commands.RoleConverter().convert(ctx, argument)
-        except commands.BadArgument:
-            try:
-                return int(argument, base=10)
-            except ValueError:
-                raise commands.BadArgument(f"{argument} is not a valid role or Role ID.") from None
-        else:
-            return r.id
 
 
 class Arguments(argparse.ArgumentParser):
@@ -227,30 +213,6 @@ class Administration(commands.Cog):
 
         try:
             await message.edit(content=text)
-        except Exception as e:
-            print(e)
-
-    @commands.command(
-        name='role',
-        help='roles a member',
-        description='the role command!',
-        aliases=[]
-    )
-    @permissions.is_admin()
-    async def _role(self, ctx, member: MemberID, *, role: RoleID):
-        selected_role = ctx.guild.get_role(role)
-        selected_member = ctx.guild.get_member(member)
-
-        if not selected_role:
-            return await ctx.send(f"Could not find any role matching **{role}**")
-
-        if not selected_member:
-            return await ctx.send(f"Could not find any member matching **{member}**")
-
-        print(selected_role, selected_member)
-
-        try:
-            await selected_member.add_roles(selected_role)
         except Exception as e:
             print(e)
 

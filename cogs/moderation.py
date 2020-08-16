@@ -6,6 +6,8 @@ from utils import permissions, utils, dataIO
 
 # parts of code took from https://github.com/Rapptz/RoboDanny
 # possible to handle some errors here?
+# todo case insensitive converter
+# todo hierarchy on role command
 # todo moderation commands: {add here}
 
 
@@ -20,6 +22,19 @@ class MemberID(commands.Converter):
                 raise commands.BadArgument(f"{argument} is not a valid member or member ID.") from None
         else:
             return m.id
+
+
+class RoleID(commands.Converter):
+    async def convert(self, ctx, argument):
+        try:
+            r = await commands.RoleConverter().convert(ctx, argument)
+        except commands.BadArgument:
+            try:
+                return int(argument, base=10)
+            except ValueError:
+                raise commands.BadArgument(f"{argument} is not a valid role or Role ID.") from None
+        else:
+            return r.id
 
 
 class ActionReason(commands.Converter):
@@ -599,6 +614,32 @@ class Moderation(commands.Cog):
     @permissions.is_mod()
     async def _pickaquestion(self, ctx):
         await self.bot.iw.restart_question_picker()
+
+    @commands.command(  # move this up
+        name='role',
+        help='roles a member',
+        description='the role command!',
+        aliases=[]
+    )
+    @permissions.is_lil_mod()
+    async def _role(self, ctx, member: MemberID, *, role: RoleID):
+
+        if role in (742318951182368829, 684039437482590229, 742319636439105537, 684797230758363137, 703187683429842985):
+            return await ctx.send('What are you trying to do')
+
+        selected_role = ctx.guild.get_role(role)
+        selected_member = ctx.guild.get_member(member)
+
+        if not selected_role:
+            return await ctx.send(f"Could not find any role matching **{role}**")
+
+        if not selected_member:
+            return await ctx.send(f"Could not find any member matching **{member}**")
+
+        try:
+            await selected_member.add_roles(selected_role)
+        except Exception as e:
+            print(e)
 
 
 def setup(bot):

@@ -11,6 +11,7 @@ import random
 # todo better info system
 # todo general commands: {add here}
 
+
 class RoleID(commands.Converter):
     async def convert(self, ctx, argument: str):
         faction_roles = dataIO.get_Info('config.json').faction_roles
