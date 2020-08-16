@@ -9,7 +9,10 @@ from discord.ext import commands
 from utils import permissions, utils, dataIO
 
 
-#  add guild_only ?
+# todo improve lastid
+# todo new class only for converters (in utils)?
+# todo case insensitive converter
+# add guild_only ?
 
 class MemberID(commands.Converter):
     async def convert(self, ctx, argument):
@@ -35,6 +38,32 @@ class ChannelID(commands.Converter):
                 raise commands.BadArgument(f"{argument} is not a valid text channel") from None
         else:
             return c.id
+
+
+class MessageID(commands.Converter):
+    async def convert(self, ctx, argument):
+        try:
+            m = await commands.MessageConverter().convert(ctx, argument)
+        except commands.BadArgument:
+            try:
+                return int(argument, base=10)
+            except ValueError:
+                raise commands.BadArgument(f"{argument} is not a valid message or Message ID.") from None
+        else:
+            return m
+
+
+class RoleID(commands.Converter):
+    async def convert(self, ctx, argument):
+        try:
+            r = await commands.RoleConverter().convert(ctx, argument)
+        except commands.BadArgument:
+            try:
+                return int(argument, base=10)
+            except ValueError:
+                raise commands.BadArgument(f"{argument} is not a valid role or Role ID.") from None
+        else:
+            return r.id
 
 
 class Arguments(argparse.ArgumentParser):
@@ -149,7 +178,7 @@ class Administration(commands.Cog):
         name='say',
         help='Says a message in a text channel',
         description='The say command!',
-        aliases=['message', 'mess'],
+        aliases=[],
     )
     @permissions.is_admin()
     async def _say(self, ctx, channel: ChannelID, *, msg: str):
@@ -181,8 +210,49 @@ class Administration(commands.Cog):
                             return await ctx.send('Could not download file...')
                         data = io.BytesIO(await resp.read())
                         await channel.send(file=discord.File(data, 'img.png'))
-        except:
-            pass
+        except Exception as e:
+            print(e)
+
+    @commands.command(
+        name='edit',
+        help='edits a message, use message url instead of id',
+        description='the edit command!',
+        alises=[]
+    )
+    @permissions.is_admin()
+    async def _edit(self, ctx, message: MessageID, *, text):
+
+        if len(text) == 0:
+            return await ctx.send('You need to insert some text')
+
+        try:
+            await message.edit(content=text)
+        except Exception as e:
+            print(e)
+
+    @commands.command(
+        name='role',
+        help='roles a member',
+        description='the role command!',
+        aliases=[]
+    )
+    @permissions.is_admin()
+    async def _role(self, ctx, member: MemberID, *, role: RoleID):
+        selected_role = ctx.guild.get_role(role)
+        selected_member = ctx.guild.get_member(member)
+
+        if not selected_role:
+            return await ctx.send(f"Could not find any role matching **{role}**")
+
+        if not selected_member:
+            return await ctx.send(f"Could not find any member matching **{member}**")
+
+        print(selected_role, selected_member)
+
+        try:
+            await selected_member.add_roles(selected_role)
+        except Exception as e:
+            print(e)
 
     @commands.group(
         name='change',
@@ -301,7 +371,7 @@ class Administration(commands.Cog):
         aliases=[],
     )
     @permissions.is_admin()
-    async def _set_lastid(self, ctx, *, args: str):  # todo migliorare
+    async def _set_lastid(self, ctx, *, args: str):
         if len(args) == 0 or not len(args.split(' ')) == 2:
             return
         if args.split(' ')[0] == 'youtube':
