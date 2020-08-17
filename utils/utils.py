@@ -28,7 +28,7 @@ def responsible(target, reason):
 
 
 def actionmessage(case, time: str=None, mass=False):
-    output = f"**{case}** the member for {time}" if time is not None else f"**{case}** the member"
+    output = f"**{case}** the member for {time} hours" if time is not None else f"**{case}** the member"
 
     if mass is True:
         output = f"**{case}** the IDs/Users"

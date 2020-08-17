@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from utils import dataIO
 
@@ -15,8 +16,22 @@ class eventsHandler(commands.Cog):
             if self.bot.ww.dbh.get_document_by_id("users", member.id) is None:
                 self.bot.ww.dbh.add_user(member)
             await member.add_roles(no_faction, member.guild.get_role(713745424690970686))
-        except:
-            pass
+
+            embed = discord.Embed(title=f"Welcome to KyoStinV Server {member.name} ",
+                                  description="This is a To-Do-List to unlock all chat channel \n"
+                                              "- first go to the #rules read them \n"
+                                              "- secondly find the confirmation word\n"
+                                              "- thirdly go to #confirmation \n"
+                                              "- at last paste the word in chat and send it\n"
+                                              "with that you unlock all channel \n"
+                                              "have a great time here and have fun", color=discord.Color.red())
+            if not member.dm_channel:
+                await member.create_dm()
+            await member.dm_channel.send(embed=embed)
+        except discord.errors.Forbidden:
+            print(f"Failed to send welcome message to {member.name} ")
+        except Exception as e:
+            print(e)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):

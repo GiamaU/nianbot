@@ -352,13 +352,13 @@ class Administration(commands.Cog):
         await self.bot.ww.restart()
 
     @commands.command(
-        name='updateroles',
-        help='Updates guild roles',
-        description='The updaterole command',
+        name='iniroles',
+        help='Gives anyone no faction',
+        description='The iniroles command',
         aliases=[],
     )
     @permissions.is_admin()
-    async def _updateroles(self, ctx):
+    async def _iniroles(self, ctx):
         members = ctx.guild.members
         faction_roles = [ctx.guild.get_role(role) for role in self.config.faction_roles]
         for member in members:
@@ -370,6 +370,40 @@ class Administration(commands.Cog):
                         await ctx.send('Unable to update roles')
                         return
         await ctx.send('successfully updated roles')
+
+    @commands.command(
+        name='confirmationdms',
+        help='Sense a dm to the members stuck in the #confirmation channel',
+        description='The confirmationdms command!',
+        aliases=[],
+    )
+    @permissions.is_admin()
+    async def _confirmationdms(self, ctx):
+        members = ctx.guild.members
+        newcommer = ctx.guild.get_role(713745424690970686)
+
+        for member in members:
+            if not member.bot and newcommer in member.roles:
+                embed = discord.Embed(title=f"Welcome to KyoStinV Server {member.name} ",
+                                      description="This is a To-Do-List to unlock all chat channel \n"
+                                                  "- first go to the #rules read them \n"
+                                                  "- secondly find the confirmation word\n"
+                                                  "- thirdly go to #confirmation \n"
+                                                  "- at last paste the word in chat and send it\n"
+                                                  "with that you unlock all channel \n"
+                                                  "have a great time here and have fun", color=discord.Color.red())
+                try:
+                    if not member.dm_channel:
+                        await member.create_dm()
+                    await member.dm_channel.send(embed=embed)
+                except discord.errors.Forbidden:
+                    print(f"Failed to send welcome message to {member.name} ")
+                    continue
+                except Exception as e:
+                    print(e)
+                    continue
+
+        await ctx.send('dms sent successfully')
 
 
 def setup(client):

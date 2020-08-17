@@ -133,7 +133,7 @@ class General(commands.Cog):
             embed.add_field(name="Commands loaded", value=str(len([x.name for x in self.bot.commands])), inline=True)
             embed.add_field(name="RAM", value=f"{ramUsage:.2f} MB", inline=True)
             embed.add_field(name='Version', value=self.config.version, inline=True)
-            embed.add_field(name="Developer", value='GianMa-U', inline=True)
+            embed.add_field(name="Developers", value='Gianma,\nJoshi,\nVelia', inline=True)
             embed.add_field(name="I love", value='Kyo', inline=True)
         else:
             embed = discord.Embed(colour=discord.Colour.red())

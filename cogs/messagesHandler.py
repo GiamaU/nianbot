@@ -52,12 +52,12 @@ class messagesHandler(commands.Cog):
             try:
                 await msg.delete()
                 await m.delete()
-            except:
-                pass
+            except Exception as e:
+                print(e)
             return
+
         elif msg.channel.id == 735536183043424287:
             self.answers_counter += 1
-
             if self.answers_counter == 30:
                 await self.bot.iw.send_question()
                 self.answers_counter = 0
